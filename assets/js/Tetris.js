@@ -499,6 +499,7 @@ var Tetris = (() => {
         playField.style.margin = 'auto';
         playField.style.position = 'relative';
         playField.style.overflow = 'hidden';
+        nextTetroField.parentElement.style.position = 'relative';
 
         initPlayField();
 
