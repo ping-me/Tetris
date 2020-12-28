@@ -79,11 +79,19 @@ var Tetris = (() => {
         0, 0, 0, 0]
     ];
 
+    /**
+     * Permet de rajouter des points au score du joueur
+     * @param {int} points Points à rajouter au score
+     */
     function scorePoints(points) {
         scoreField.textContent = parseInt(scoreField.textContent) + points;
     }
 
+    /**
+     * Permet de vérifier si des lignes ont été réalisées
+     */
     function checkLines() {
+        // On recherche d'abord les lignes
         let rowsToRemove = [];
         for (let y = 10; y < fieldRows - 1; y++) {
             let hasLine = true;
@@ -129,6 +137,9 @@ var Tetris = (() => {
         }
     }
 
+    /**
+     * Fais du prochain tetromino le tetromino en cours, et crée le suivant. 
+     */
     function newTetro() {
         currentTetro = nextTetro;
         nextTetro = Math.floor(Math.random() * 7) + 1;
@@ -143,10 +154,18 @@ var Tetris = (() => {
         }
     }
 
+    /**
+     * Fonction callback qui fait tomber naturellement la pièce.
+     */
     function tetroFall() {
         moveTetro('down', null, true);
     }
 
+    /**
+     * Permet de faire tourner un tetromino selon une rotation donnée.
+     * @param {array} tetroToRotate Le tetromino à tourner, dans sa position par défaut
+     * @param {int} rotation Le type de rotation à effectuer
+     */
     function rotate(tetroToRotate, rotation) {
         let rotatedTetro = [];
         for (let y = 0; y < 4; y++) {
@@ -176,6 +195,12 @@ var Tetris = (() => {
         return rotatedTetro;
     }
 
+    /**
+     * Permet de déplacer un tetromino.
+     * @param {string} action L'action a effectuer
+     * @param {Event} keyEvent Si c'est une touche du clavier qui a été appuyé, permet de récupérer la touche appuyée
+     * @param {bool} isCallback Mise à true par le callback pour indiquer que la pièce tombe
+     */
     function moveTetro(action, keyEvent = null, isCallback = false) {
         // On ne bouge pas si le tetro est en train de tomber
         if (!isKeyDown && !isGameOver) {
@@ -297,6 +322,12 @@ var Tetris = (() => {
         }
     }
 
+    /**
+     * Permet de vérifier si on peut place le tetromino à cet endroit.
+     * @param {int} xToCheck La position X du tetromino à vérifier
+     * @param {int} yToCheck La position Y du tetromino à vérifier
+     * @param {int} rotToCheck La rotation à appliquer au tetromino en cours de vérification
+     */
     function canPlaceTetro(xToCheck, yToCheck, rotToCheck) {
         let tetroArray = rotate(tetro[currentTetro - 1], rotToCheck);
         let canPlace = true;
@@ -314,6 +345,10 @@ var Tetris = (() => {
         return canPlace;
     }
 
+    /**
+     * Permet d'afficher ou de masquer un tetromino.
+     * @param {bool} show Toggle pour afficher ou cacher le tetromino
+     */
     function placeTetro(show = true) {
         let tetroArray = rotate(tetro[currentTetro - 1], currentTetroRot);
         for (let y = 0; y < 4; y++) {
@@ -326,6 +361,9 @@ var Tetris = (() => {
         renderPlayField();
     }
 
+    /**
+     * Dessine le terrain de jeu.
+     */
     function renderPlayField() {
         // On vide le terrain de jeu
         playField.innerHTML = '';
@@ -353,6 +391,10 @@ var Tetris = (() => {
         }
     }
 
+    /**
+     * Redimensionne le terrain de jeu pour qu'il ne dépasse pas de son container.
+     * Appelé en callback de window.resize
+     */
     function resizePlayField() {
         let pfWidth = playField.parentElement.clientWidth;
         let pfHeight = playField.parentElement.clientHeight;
