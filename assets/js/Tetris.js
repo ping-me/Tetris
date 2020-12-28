@@ -553,7 +553,7 @@ var Tetris = (() => {
         document.addEventListener('keydown', (event) => {
             moveTetro('key', event);
         });
-        document.addEventListener('keyup', (event) => {
+        document.addEventListener('keyup', () => {
             isRotKeyDown = false;
         });
     }
