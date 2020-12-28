@@ -437,7 +437,6 @@ var Tetris = (() => {
         // Lorsqu'une ligne ou plusieurs lignes sont réalisées, elle réapparaitront quand les pièces tomberont.
         fieldRows = fr + 10;
 
-
         // Initialisation du terrain de jeu
         playField.style.margin = 'auto';
         playField.style.position = 'relative';
@@ -521,9 +520,7 @@ var Tetris = (() => {
         // Initialisation du jeu
         nextTetro = Math.floor(Math.random() * 7) + 1;
         newTetro();
-
         placeTetro();
-
         fallCallback = window.setInterval(tetroFall, tetroFallDelay);
     }
 
