@@ -249,6 +249,8 @@ var Tetris = (() => {
                         break;
                     case 's':
                     case 'S':
+                        // On rajoute 10 points par lignes quand on fait descendre volontairement la pièce
+                        scorePoints(10);
                         nextTetroY++;
                         break;
                     default:
@@ -277,6 +279,10 @@ var Tetris = (() => {
                         }
                         break;
                     case 'down':
+                        if (!isCallback) {
+                            // Si on fait descendre la pièce et que ce n'est pas le callback
+                            scorePoints(10);
+                        }
                         nextTetroY++;
                         break;
                     default:
@@ -290,10 +296,6 @@ var Tetris = (() => {
                 currentTetroX = nextTetroX;
                 currentTetroY = nextTetroY;
                 currentTetroRot = nextTetroRot;
-                if ((action == 'down') && (!isCallback)) {
-                    // On rajoute 10 points par lignes quand on fait descendre volontairement la pièce
-                    scorePoints(10);
-                }
                 placeTetro();
             }
             else {
