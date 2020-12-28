@@ -274,7 +274,7 @@ var Tetris = (() => {
                         // Si on fait descendre la pièce et que ce n'est pas le callback
                         scorePoints(10);
                         window.clearInterval(fallCallback);
-                        window.setInterval(tetroFall, tetroFallDelay);
+                        fallCallback = window.setInterval(tetroFall, tetroFallDelay);
                     }
                     nextTetroY++;
                     break;
@@ -285,7 +285,6 @@ var Tetris = (() => {
                             console.log('Escape');
                             if (fallCallback) {
                                 window.clearInterval(fallCallback);
-                                fallCallback = null;
                             }
                             else {
                                 fallCallback = window.setInterval(tetroFall, tetroFallDelay);
@@ -565,11 +564,11 @@ var Tetris = (() => {
     function startGame() {
         // Initialisation du jeu
         nextTetro = Math.floor(Math.random() * 7) + 1;
+        // Dimensionnement initial du terrain de jeu
+        resizePlayField();
         newTetro();
         placeTetro();
         
-        // Dimensionnement initial du terrain de jeu
-        resizePlayField();
         
         // La fonction est également mise en callback de l'événement window.resize
         window.onresize = resizePlayField;
