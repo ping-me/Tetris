@@ -146,7 +146,6 @@ var Tetris = (() => {
         currentTetroRot = Math.floor(Math.random() * 4);
         currentTetroX = fieldCols / 2 - 2;
         currentTetroY = 9;
-        updateNextTetro();
         if (!canPlaceTetro(currentTetroX, currentTetroY, currentTetroRot)) {
             // Impossible de placer le nouveau tetro : donc fin de jeu
             window.clearInterval(fallCallback);
@@ -155,6 +154,9 @@ var Tetris = (() => {
         }
     }
 
+    /**
+     * Dessine le tetromino suivant dans sa fenêtre dédiée
+     */
     function updateNextTetro() {
         nextTetroField.innerHTML = '';
         let nextTetroSize = null;
@@ -431,6 +433,8 @@ var Tetris = (() => {
                 }
             }
         }
+        // Mets aussi à jour le nouveau tetro
+        updateNextTetro();
     }
 
     /**
@@ -502,11 +506,6 @@ var Tetris = (() => {
         nextTetroField.parentElement.style.position = 'relative';
 
         initPlayField();
-
-        // Dimensionnement initial du terrain de jeu
-        resizePlayField();
-        // La fonction est également mise en callback de l'événement window.resize
-        window.onresize = resizePlayField;
     }
 
     /**
@@ -568,6 +567,14 @@ var Tetris = (() => {
         nextTetro = Math.floor(Math.random() * 7) + 1;
         newTetro();
         placeTetro();
+        
+        // Dimensionnement initial du terrain de jeu
+        resizePlayField();
+        
+        // La fonction est également mise en callback de l'événement window.resize
+        window.onresize = resizePlayField;
+
+        // Envoi du timer de chute des pièces
         fallCallback = window.setInterval(tetroFall, tetroFallDelay);
     }
 
