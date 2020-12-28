@@ -20,7 +20,7 @@ var Tetris = (() => {
     // Contrôle du jeu
     var isGameOver = false;
     var tetroFallDelay = 1000;
-    var isKeyDown = false;
+    var isRotKeyDown = false;
     var fallCallback = null;
 
     // Taille du terrain de jeu
@@ -132,7 +132,7 @@ var Tetris = (() => {
                 tetroFallDelay = tetroFallDelay * 0.95;
                 // On arrête et relance le timer avec le nouveau delai
                 window.clearInterval(fallCallback);
-                window.setInterval(tetroFall, tetroFallDelay);
+                fallCallback = window.setInterval(tetroFall, tetroFallDelay);
             }
         }
     }
@@ -146,11 +146,48 @@ var Tetris = (() => {
         currentTetroRot = Math.floor(Math.random() * 4);
         currentTetroX = fieldCols / 2 - 2;
         currentTetroY = 9;
+        updateNextTetro();
         if (!canPlaceTetro(currentTetroX, currentTetroY, currentTetroRot)) {
             // Impossible de placer le nouveau tetro : donc fin de jeu
             window.clearInterval(fallCallback);
             isGameOver = true;
             nextTetroField.innerHTML = 'GAME OVER';
+        }
+    }
+
+    function updateNextTetro() {
+        nextTetroField.innerHTML = '';
+        let nextTetroSize = null;
+        if (nextTetroField.clientHeight < nextTetroField.clientWidth) {
+            nextTetroSize = nextTetroField.clientHeight * 0.75;
+        }
+        else {
+            nextTetroSize = nextTetroField.clientWidth * 0.75;
+        }
+        nextTetroBloc = nextTetroSize / 4;
+        nextTetroDivTop = nextTetroField.clientHeight / 2 - nextTetroBloc * 2;
+        nextTetroDivLeft = nextTetroField.clientWidth / 2 - nextTetroBloc * 2;
+        // Rendu du tetro
+        let nextTetroData = tetro[nextTetro - 1];
+        for (let y = 0; y < 4; y++) {
+            for (let x = 0; x < 4; x++) {
+                if (nextTetroData[x + y * 4] != 0) {
+                    // Création du bloc
+                    let block = document.createElement('div');
+                    block.style.position = 'absolute';
+                    block.style.width = nextTetroBloc + 'px';
+                    block.style.height = nextTetroBloc + 'px';
+                    block.style.top = (nextTetroDivTop + nextTetroBloc * y) + 'px';
+                    block.style.left = (nextTetroDivLeft + nextTetroBloc * x) + 'px';
+                    block.classList.add('tetromino')
+
+                    // Sélection de la pièce à afficher
+                    block.classList.add('tetromino' + nextTetro);
+
+                    // Dessin du bloc
+                    nextTetroField.appendChild(block);
+                }
+            }
         }
     }
 
@@ -165,6 +202,7 @@ var Tetris = (() => {
      * Permet de faire tourner un tetromino selon une rotation donnée.
      * @param {array} tetroToRotate Le tetromino à tourner, dans sa position par défaut
      * @param {int} rotation Le type de rotation à effectuer
+     * @returns {array} Un tableau contenant le tetromino tourné
      */
     function rotate(tetroToRotate, rotation) {
         let rotatedTetro = [];
@@ -202,93 +240,94 @@ var Tetris = (() => {
      * @param {bool} isCallback Mise à true par le callback pour indiquer que la pièce tombe
      */
     function moveTetro(action, keyEvent = null, isCallback = false) {
-        // On ne bouge pas si le tetro est en train de tomber
-        if (!isKeyDown && !isGameOver) {
+        if (!isRotKeyDown && !isGameOver) {
             let nextTetroX = currentTetroX;
             let nextTetroY = currentTetroY;
             let nextTetroRot = currentTetroRot;
 
             let willStick = false;
 
-            if (keyEvent) {
-                // Gestion touches du clavier
-                switch (keyEvent.key) {
-                    case 'Escape':
-                        console.log('Escape');
-                        if (fallCallback) {
-                            window.clearInterval(fallCallback);
-                            fallCallback = null;
-                        }
-                        else {
-                            fallCallback = window.setInterval(tetroFall, tetroFallDelay);
-                        }
-                        break;
-                    case 'q':
-                    case 'Q':
-                        nextTetroX--;
-                        break;
-                    case 'a':
-                    case 'A':
-                        isKeyDown = true;
-                        nextTetroRot--;
-                        if (nextTetroRot < 0) {
-                            nextTetroRot = 3;
-                        }
-                        break;
-                    case 'd':
-                    case 'D':
-                        nextTetroX++;
-                        break;
-                    case 'e':
-                    case 'E':
-                        isKeyDown = true;
-                        nextTetroRot++;
-                        if (nextTetroRot > 3) {
-                            nextTetroRot = 0;
-                        }
-                        break;
-                    case 's':
-                    case 'S':
-                        // On rajoute 10 points par lignes quand on fait descendre volontairement la pièce
+            // Gestion boutons de l'interface
+            switch (action) {
+                case 'left':
+                    nextTetroX--;
+                    break;
+                case 'rotleft':
+                    nextTetroRot--;
+                    if (nextTetroRot < 0) {
+                        nextTetroRot = 3;
+                    }
+                    break;
+                case 'right':
+                    nextTetroX++;
+                    break;
+                case 'rotright':
+                    nextTetroRot++;
+                    if (nextTetroRot > 3) {
+                        nextTetroRot = 0;
+                    }
+                    break;
+                case 'down':
+                    if (!isCallback) {
+                        // Si on fait descendre la pièce et que ce n'est pas le callback
                         scorePoints(10);
-                        nextTetroY++;
-                        break;
-                    default:
-                        break;
-                }
-            }
-            else {
-                // Gestion boutons de l'interface
-                switch (action) {
-                    case 'left':
-                        nextTetroX--;
-                        break;
-                    case 'rotleft':
-                        nextTetroRot--;
-                        if (nextTetroRot < 0) {
-                            nextTetroRot = 3;
-                        }
-                        break;
-                    case 'right':
-                        nextTetroX++;
-                        break;
-                    case 'rotright':
-                        nextTetroRot++;
-                        if (nextTetroRot > 3) {
-                            nextTetroRot = 0;
-                        }
-                        break;
-                    case 'down':
-                        if (!isCallback) {
-                            // Si on fait descendre la pièce et que ce n'est pas le callback
+                        window.clearInterval(fallCallback);
+                        window.setInterval(tetroFall, tetroFallDelay);
+                    }
+                    nextTetroY++;
+                    break;
+                case 'key':
+                    // Gestion touches du clavier
+                    switch (keyEvent.key) {
+                        case 'Escape':
+                            console.log('Escape');
+                            if (fallCallback) {
+                                window.clearInterval(fallCallback);
+                                fallCallback = null;
+                            }
+                            else {
+                                fallCallback = window.setInterval(tetroFall, tetroFallDelay);
+                            }
+                            break;
+                        case 'q':
+                        case 'Q':
+                            nextTetroX--;
+                            break;
+                        case 'a':
+                        case 'A':
+                            isRotKeyDown = true;
+                            nextTetroRot--;
+                            if (nextTetroRot < 0) {
+                                nextTetroRot = 3;
+                            }
+                            break;
+                        case 'd':
+                        case 'D':
+                            nextTetroX++;
+                            break;
+                        case 'e':
+                        case 'E':
+                            isRotKeyDown = true;
+                            nextTetroRot++;
+                            if (nextTetroRot > 3) {
+                                nextTetroRot = 0;
+                            }
+                            break;
+                        case 's':
+                        case 'S':
+                            // On rajoute 10 points par lignes quand on fait descendre volontairement la pièce
                             scorePoints(10);
-                        }
-                        nextTetroY++;
-                        break;
-                    default:
-                        break;
-                }
+                            window.clearInterval(fallCallback);
+                            fallCallback = window.setInterval(tetroFall, tetroFallDelay);
+                            nextTetroY++;
+                            break;
+                        default:
+                            break;
+                    }
+                default:
+                    break;
             }
+            
             // Peut on placer ce tetro à cet endroit ?
             // On met d'abord des 0 à l'emplacement de la pièce
             placeTetro(false);
@@ -325,10 +364,11 @@ var Tetris = (() => {
     }
 
     /**
-     * Permet de vérifier si on peut place le tetromino à cet endroit.
+     * Permet de vérifier si on peut placer le tetromino à cet endroit.
      * @param {int} xToCheck La position X du tetromino à vérifier
      * @param {int} yToCheck La position Y du tetromino à vérifier
      * @param {int} rotToCheck La rotation à appliquer au tetromino en cours de vérification
+     * @returns {boolean} true si la pièce peut être placée, sinon false
      */
     function canPlaceTetro(xToCheck, yToCheck, rotToCheck) {
         let tetroArray = rotate(tetro[currentTetro - 1], rotToCheck);
@@ -421,6 +461,24 @@ var Tetris = (() => {
     }
 
     /**
+     * Initialise le terrain de jeu avec des murs extérieur et l'intérieur vide
+     */
+    function initPlayField() {
+        for (let row = 0; row < fieldRows; row++) {
+            for (let col = 0; col < fieldCols; col++) {
+                if ((col == 0) || (col == (fieldCols - 1)) || (row == (fieldRows - 1))) {
+                    // On met des tetromino noirs sur les bords et le bas du terrain de jeu
+                    pfData.push(8);
+                }
+                else {
+                    // On laisse l'espace vide pour le reste
+                    pfData.push(0);
+                }
+            }
+        }
+    }
+
+    /**
      * Permet de renseigner le div dans lequel le terrain de jeu sera affiché.
      * Mesure par défaut 10 colonnes par 24 lignes (+10 cachées au dessus).
      * DOIT être appelé.
@@ -442,23 +500,11 @@ var Tetris = (() => {
         playField.style.position = 'relative';
         playField.style.overflow = 'hidden';
 
-        // Remplissage initial
-        for (let row = 0; row < fieldRows; row++) {
-            for (let col = 0; col < fieldCols; col++) {
-                if ((col == 0) || (col == (fieldCols - 1)) || (row == (fieldRows - 1))) {
-                    // On met des tetromino noirs sur les bords et le bas du terrain de jeu
-                    pfData.push(8);
-                }
-                else {
-                    // On laisse l'espace vide pour le reste
-                    pfData.push(0);
-                }
-            }
-        }
-        
-        // On peut maintenant initialiser le terrain de jeu
+        initPlayField();
+
+        // Dimensionnement initial du terrain de jeu
         resizePlayField();
-        // La fonction est mise en callback pour l'événement window.resize
+        // La fonction est également mise en callback de l'événement window.resize
         window.onresize = resizePlayField;
     }
 
@@ -509,7 +555,7 @@ var Tetris = (() => {
             moveTetro('key', event);
         });
         document.addEventListener('keyup', (event) => {
-            isKeyDown = false;
+            isRotKeyDown = false;
         });
     }
 
