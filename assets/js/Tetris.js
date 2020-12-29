@@ -146,8 +146,12 @@ var Tetris = (() => {
         currentTetroRot = Math.floor(Math.random() * 4);
         currentTetroX = fieldCols / 2 - 2;
         currentTetroY = 9;
-        if (!canPlaceTetro(currentTetroX, currentTetroY, currentTetroRot)) {
+        if (canPlaceTetro(currentTetroX, currentTetroY, currentTetroRot)) {
+            placeTetro();
+        }
+        else {
             // Impossible de placer le nouveau tetro : donc fin de jeu
+            placeTetro();
             window.clearInterval(fallCallback);
             isGameOver = true;
             nextTetroField.innerHTML = 'GAME OVER';
@@ -457,7 +461,6 @@ var Tetris = (() => {
         // On redimensionne
         playField.style.height = (blockWidth * (fieldRows - 10)) + 'px';
         playField.style.width = (blockWidth * fieldCols) + 'px';
-        playField.style.border = 'solid 1px black';
 
         // Et on redessine
         renderPlayField();
@@ -568,7 +571,6 @@ var Tetris = (() => {
         resizePlayField();
         newTetro();
         placeTetro();
-        
         
         // La fonction est également mise en callback de l'événement window.resize
         window.onresize = resizePlayField;

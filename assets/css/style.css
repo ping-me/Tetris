@@ -16,11 +16,11 @@ body {
 #playfield-container {
     height: 70% !important;
 }
+#scoreboard-container {
+    height: 5% !important;
+}
 #controls-container {
     height: 25% !important;
-}
-#scorefield-container {
-    height: 5% !important;
 }
 
 /* Hauteur des conteneurs @breakpoint >= md */
@@ -28,10 +28,10 @@ body {
     #playfield-container {
         height: 75% !important;
     }
+    #scoreboard-container {
+        height: 75% !important;
+    }
     #controls-container {
         height: 25% !important;
-    }
-    #scorefield-container {
-        height: 100% !important;
     }
 }
