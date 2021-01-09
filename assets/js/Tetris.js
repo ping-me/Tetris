@@ -1,44 +1,44 @@
-var Tetris = (() => {
+let Tetris = (() => {
     // Divs container pour le plateau de jeu et la fiche de score
-    var playField = null;
-    var nextTetroField = null;
-    var scoreField = null;
-    var linesField = null;
-    var levelField = null;
+    let playField = null;
+    let nextTetroField = null;
+    let scoreField = null;
+    let linesField = null;
+    let levelField = null;
 
     // Boutons pour les contrôles
-    var leftButton = null;
-    var leftRotButton = null;
-    var rightButton = null;
-    var rightRotButton = null;
-    var downButton = null;
+    let leftButton = null;
+    let leftRotButton = null;
+    let rightButton = null;
+    let rightRotButton = null;
+    let downButton = null;
 
     /****************************************************
      * Réglages principaux                              *
      ****************************************************/
 
     // Contrôle du jeu
-    var isGameOver = false;
-    var tetroFallDelay = 1000;
-    var isRotKeyDown = false;
-    var fallCallback = null;
+    let isGameOver = false;
+    let tetroFallDelay = 1000;
+    let isRotKeyDown = false;
+    let fallCallback = null;
 
     // Taille du terrain de jeu
-    var fieldCols = null;
-    var fieldRows = null;
+    let fieldCols = null;
+    let fieldRows = null;
 
     // Données du terrain de jeu
-    var pfData = [];
+    let pfData = [];
 
     // Largeur du block
-    var blockWidth = 0;
+    let blockWidth = 0;
 
     // Pièce en cours
-    var currentTetro = null;
-    var currentTetroRot = null;
-    var currentTetroX = null;
-    var currentTetroY = null;
-    var nextTetro = null;
+    let currentTetro = null;
+    let currentTetroRot = null;
+    let currentTetroX = null;
+    let currentTetroY = null;
+    let nextTetro = null;
 
     // Définition des tetrominos
     const tetro = [
@@ -96,7 +96,7 @@ var Tetris = (() => {
         for (let y = 10; y < fieldRows - 1; y++) {
             let hasLine = true;
             for (let x = 1; x < fieldCols - 1; x++) {
-                if (pfData[x + y * fieldCols] == 0) {
+                if (pfData[x + y * fieldCols] === 0) {
                     hasLine = false;
                 }
             }
@@ -163,21 +163,21 @@ var Tetris = (() => {
      */
     function updateNextTetro() {
         nextTetroField.innerHTML = '';
-        let nextTetroSize = null;
+        let nextTetroSize;
         if (nextTetroField.clientHeight < nextTetroField.clientWidth) {
             nextTetroSize = nextTetroField.clientHeight * 0.75;
         }
         else {
             nextTetroSize = nextTetroField.clientWidth * 0.75;
         }
-        nextTetroBloc = nextTetroSize / 4;
-        nextTetroDivTop = nextTetroField.clientHeight / 2 - nextTetroBloc * 2;
-        nextTetroDivLeft = nextTetroField.clientWidth / 2 - nextTetroBloc * 2;
+        let nextTetroBloc = nextTetroSize / 4;
+        let nextTetroDivTop = nextTetroField.clientHeight / 2 - nextTetroBloc * 2;
+        let nextTetroDivLeft = nextTetroField.clientWidth / 2 - nextTetroBloc * 2;
         // Rendu du tetro
         let nextTetroData = tetro[nextTetro - 1];
         for (let y = 0; y < 4; y++) {
             for (let x = 0; x < 4; x++) {
-                if (nextTetroData[x + y * 4] != 0) {
+                if (nextTetroData[x + y * 4] !== 0) {
                     // Création du bloc
                     let block = document.createElement('div');
                     block.style.position = 'absolute';
@@ -242,8 +242,8 @@ var Tetris = (() => {
     /**
      * Permet de déplacer un tetromino.
      * @param {string} action L'action a effectuer
-     * @param {Event} keyEvent Si c'est une touche du clavier qui a été appuyé, permet de récupérer la touche appuyée
-     * @param {bool} isCallback Mise à true par le callback pour indiquer que la pièce tombe
+     * @param {KeyboardEvent} keyEvent Si c'est une touche du clavier qui a été appuyé, permet de récupérer la touche appuyée
+     * @param {boolean} isCallback Mise à true par le callback pour indiquer que la pièce tombe
      */
     function moveTetro(action, keyEvent = null, isCallback = false) {
         if (!isRotKeyDown && !isGameOver) {
@@ -329,6 +329,7 @@ var Tetris = (() => {
                         default:
                             break;
                     }
+                    break;
                 default:
                     break;
             }
@@ -344,12 +345,12 @@ var Tetris = (() => {
             }
             else {
                 if (keyEvent) {
-                    if ((keyEvent.key == 's') || (keyEvent.key == 'S')) {
+                    if ((keyEvent.key === 's') || (keyEvent.key === 'S')) {
                         willStick = true;
                     }
                 }
                 else {
-                    if (action == 'down') {
+                    if (action === 'down') {
                         willStick = true;
                     }
                 }
@@ -381,8 +382,8 @@ var Tetris = (() => {
         check:
         for (let y = 0; y < 4; y++) {
             for (let x = 0; x < 4; x++) {
-                if (tetroArray[x + y * 4] != 0) {
-                    if (pfData[xToCheck + x + (yToCheck + y) * fieldCols] != 0) {
+                if (tetroArray[x + y * 4] !== 0) {
+                    if (pfData[xToCheck + x + (yToCheck + y) * fieldCols] !== 0) {
                         canPlace = false;
                         break check;
                     }
@@ -394,13 +395,13 @@ var Tetris = (() => {
 
     /**
      * Permet d'afficher ou de masquer un tetromino.
-     * @param {bool} show Toggle pour afficher ou cacher le tetromino
+     * @param {boolean} show Toggle pour afficher ou cacher le tetromino
      */
     function placeTetro(show = true) {
         let tetroArray = rotate(tetro[currentTetro - 1], currentTetroRot);
         for (let y = 0; y < 4; y++) {
             for (let x = 0; x < 4; x++) {
-                if (tetroArray[x + y * 4] != 0) {
+                if (tetroArray[x + y * 4] !== 0) {
                     pfData[currentTetroX + x + (currentTetroY + y) * fieldCols] = show ? currentTetro : 0;
                 }
             }
@@ -472,7 +473,7 @@ var Tetris = (() => {
     function initPlayField() {
         for (let row = 0; row < fieldRows; row++) {
             for (let col = 0; col < fieldCols; col++) {
-                if ((col == 0) || (col == (fieldCols - 1)) || (row == (fieldRows - 1))) {
+                if ((col === 0) || (col === (fieldCols - 1)) || (row === (fieldRows - 1))) {
                     // On met des tetromino noirs sur les bords et le bas du terrain de jeu
                     pfData.push(8);
                 }
@@ -488,7 +489,8 @@ var Tetris = (() => {
      * Permet de renseigner le div dans lequel le terrain de jeu sera affiché.
      * Mesure par défaut 10 colonnes par 24 lignes (+10 cachées au dessus).
      * DOIT être appelé.
-     * @param {Element} playDiv Le div ou apparaitra le terrain de jeu
+     * @param {HTMLElement} playDiv Le div ou apparaitra le terrain de jeu
+     * @param {HTMLElement} nextTetroDiv Le div où doit apparaître la prochaine pièce
      * @param {int} fc La largeur du terrain de jeu, en colonnes
      * @param {int} fr La hauteur du terrain de jeu, en lignes
      */
@@ -513,8 +515,9 @@ var Tetris = (() => {
     /**
      * Permet de renseigner les div qui contiendront le score et le niveau actuel
      * DOIT être appelé.
-     * @param {Element} scoreDiv L'élément DOM contenant le score : son textContent sera remplacé
-     * @param {Element} levelDiv L'élément DOM contenant le niveau en cours : son textContent sera remplacé
+     * @param {HTMLElement} scoreDiv L'élément DOM contenant le score : son textContent sera remplacé
+     * @param {HTMLElement} linesDiv L'élément où doit apparître le nombre de lignes réalisées
+     * @param {HTMLElement} levelDiv L'élément DOM contenant le niveau en cours : son textContent sera remplacé
      */
     function setStatBoard(scoreDiv, linesDiv, levelDiv) {
         scoreField = scoreDiv;
@@ -525,11 +528,11 @@ var Tetris = (() => {
     /**
      * Permet de renseigner les boutons de commande
      * DOIT être appelé.
-     * @param {Element} lBtn Le bouton Gauche
-     * @param {Element} lrBtn Le bouton pour tourner la pièce vers la gauche
-     * @param {Element} rBtn Le bouton Droit
-     * @param {Element} rrBtn Le bouton pour tourner la pièce vers la droite
-     * @param {Element} dBtn Le bouton Bas
+     * @param {HTMLElement} lBtn Le bouton Gauche
+     * @param {HTMLElement} lrBtn Le bouton pour tourner la pièce vers la gauche
+     * @param {HTMLElement} rBtn Le bouton Droit
+     * @param {HTMLElement} rrBtn Le bouton pour tourner la pièce vers la droite
+     * @param {HTMLElement} dBtn Le bouton Bas
      */
     function setControls(lBtn, lrBtn, rBtn, rrBtn, dBtn) {
         leftButton = lBtn;
@@ -564,7 +567,7 @@ var Tetris = (() => {
     /**
      * Démarre le jeu
      */
-    function startGame() {
+    function start() {
         // Initialisation du jeu
         nextTetro = Math.floor(Math.random() * 7) + 1;
         // Dimensionnement initial du terrain de jeu
@@ -580,10 +583,10 @@ var Tetris = (() => {
     }
 
     return {
-        setPlayField:  setPlayField,
-        setScoreField: setStatBoard,
-        setControls:   setControls,
-        startGame:     startGame
+        setPlayField:   setPlayField,
+        setStatBoard:   setStatBoard,
+        setControls:    setControls,
+        start:          start
     }
 }
 )();
